@@ -1,7 +1,6 @@
 package Model;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Cell {
     private boolean northDoor;
@@ -15,12 +14,9 @@ public class Cell {
         southDoor = false;
         eastDoor = false;
         westDoor = false;
-        Random itemsNumber = new Random();
-        int countItem = itemsNumber.nextInt(5);
         items = new ArrayList<>();
-        for (int i = 0; i < countItem; i++) {
-            items.add(Item.giveRandomItem());
-        }
+        CellFiller cellFiller = new CellFiller(this);
+        cellFiller.fillCell();
     }
 
     public boolean isContainChest() {

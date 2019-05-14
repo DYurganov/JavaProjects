@@ -4,21 +4,23 @@ import Model.Item;
 import Model.Labyrinth;
 import Model.Player;
 import View.PlayerDialog;
+import View.View;
+
 import java.util.ArrayList;
 import java.util.Map;
 
-public class Game {
+public class Game implements Controller {
     private Labyrinth labyrinth;
     private Player player;
     private boolean endGame;
 
     public Game() {
         endGame = false;
-        PlayerDialog dialog = new PlayerDialog();
+        View dialog = new PlayerDialog(this);
         dialog.displayWelcomeWindow();
-        int verticalSize = dialog.readNumber();                         // read maze size
+        int verticalSize = dialog.readNumber();
         int horizontalSize = dialog.readNumber();
-        labyrinth = new Labyrinth(verticalSize, horizontalSize);        //maze generate
+        labyrinth = new Labyrinth(verticalSize, horizontalSize);
         player = new Player(labyrinth.getEnterCave() % horizontalSize, labyrinth.getEnterCave() / horizontalSize);
         if (labyrinth.minTurn() > player.getLife()) {                   //add more life for big maze
             player.addLife(labyrinth.minTurn());
@@ -28,10 +30,7 @@ public class Game {
             directions = labyrinth.openedDoor(player.getX(), player.getY());
             ArrayList<Item> cellItem = labyrinth.getCellItemList(player.getX(), player.getY());
             dialog.makeTurn(player.getX(), player.getY(), labyrinth.numberOfOpenDoors(player.getX(), player.getY()), directions, cellItem);
-            String answer = dialog.readPlayerCommand();
-            if (!parseCommand(answer, dialog)) {
-                dialog.wrongInput();
-            }
+            dialog.readPlayerCommand();
             if (player.getLife() == 0) {
                 endGame = true;
                 dialog.defeat();
@@ -39,7 +38,8 @@ public class Game {
         }
     }
 
-    private boolean parseCommand(String command, PlayerDialog dialog) {
+    @Override
+    public boolean parseCommand(String command, PlayerDialog dialog) {
         String[] spittedCommand = command.split(" ");
         switch (spittedCommand[0]) {
             case "-N":
@@ -70,7 +70,7 @@ public class Game {
                 dialog.showInventory(player.getInventory());
                 break;
             default:
-                return false;
+                dialog.wrongInput();
 
         }
         return true;

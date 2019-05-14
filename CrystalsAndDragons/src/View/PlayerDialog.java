@@ -1,22 +1,27 @@
 package View;
 
+import Controller.Controller;
 import Model.Item;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
 
-public class PlayerDialog {
+public class PlayerDialog implements View {
     private Scanner in;
+    private Controller game;
 
-    public PlayerDialog() {
+    public PlayerDialog(Controller game) {
+        this.game = game;
         in = new Scanner(System.in);
     }
 
+    @Override
     public void displayWelcomeWindow() {
         System.out.println("Hello, please enter labyrinth size");
     }
 
+    @Override
     public int readNumber() {
         while (!in.hasNextInt()) {
             System.out.println("One of the number is incorrect, please enter it again");
@@ -25,18 +30,22 @@ public class PlayerDialog {
         return in.nextInt();
     }
 
+    @Override
     public void wrongInput() {
         System.out.println("You entered wrong input, try again or -h for help");
     }
 
+    @Override
     public void errorItem() {
         System.out.println("Wrong item");
     }
 
+    @Override
     public void wrongDoor() {
         System.out.println("This door is closed");
     }
 
+    @Override
     public void showHelp() {
         System.out.println("Your objective is find key, chest and use key of chest\n" +
                 "Use command -S -W -E -N to move through the maze through the open doors with -open\n" +
@@ -46,14 +55,17 @@ public class PlayerDialog {
                 "Good luck!");
     }
 
+    @Override
     public void defeat() {
         System.out.println("Your strength dried up, you died in the dark dungeons of the dragon cave.");
     }
 
+    @Override
     public void victory() {
         System.out.println("Congratulation! You found the treasure of the dragon cave");
     }
 
+    @Override
     public void makeTurn(int x, int y, int N, Map<String, Boolean> directions, ArrayList<Item> itemList) {
         StringBuilder outputString = new StringBuilder("You are in the room ");
         outputString.append(x);
@@ -89,6 +101,7 @@ public class PlayerDialog {
         System.out.println(outputString);
     }
 
+    @Override
     public void showInventory(ArrayList<Item> inventory) {
         if (inventory.isEmpty()) {
             System.out.println("Inventory is empty");
@@ -102,17 +115,19 @@ public class PlayerDialog {
         System.out.println(outputString);
     }
 
-    public String readPlayerCommand() {
+    @Override
+    public void readPlayerCommand() {
         while (!in.hasNext()) {
         }
         String input = in.nextLine();
         if (input.isEmpty()) {
             input = in.nextLine();
         }
-        return input;
+        game.parseCommand(input, this);
     }
 
-    public void impossibleAction(){
+    @Override
+    public void impossibleAction() {
         System.out.println("You can't do this now");
     }
 
